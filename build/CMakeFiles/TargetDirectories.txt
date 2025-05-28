@@ -1,0 +1,3 @@
+/Users/yun/Desktop/cg_project/build/CMakeFiles/main.dir
+/Users/yun/Desktop/cg_project/build/CMakeFiles/edit_cache.dir
+/Users/yun/Desktop/cg_project/build/CMakeFiles/rebuild_cache.dir

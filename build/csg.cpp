@@ -43,4 +43,31 @@ bool isInside(const vec3& p, const Plane& pl){
 // 求線段 p1→p2 與平面的交點( 這裡的 p1 p2 是從原本建構柱體的那些三角形片面來的，跟上面的pi pi+i不一樣 )
 vec3 intersectPlane(const vec3& p1, const vec3& p2, const Plane& pl){
     float v1 = dot(pl.n, p1) + pl.d;
-    float v2 = dot 
+    float v2 = dot (pl.n, p2) + pl.d;
+    float t = v1 / (v1 - v2);
+
+    return p1 + t * (p2 - p1);
+}
+
+//以一個平面去裁切一個多面體
+Polyhedron clipByPlane(const Polyhedron& P, const Plane& pl){
+    Polyhedron out;
+
+    for(auto& face : P.faces){
+        vector<vec3> poly = { P.verts[face[0]], P.verts[face[1]], P.verts[face[2]] };// 取出原三角形的 3 個點
+
+        vector<vec3> input = poly;
+        vector<vec3> output;
+        int N = (int)input.size();
+        for (int i = 0; i < N; i++){
+            vec3 a = input[i];
+            vec3 b = input[(i+1) % N];
+            bool inA = isInside(a, pl);
+            bool inB = isInside(b, pl);
+
+            if(inA && inB){
+                output.push_back(b);
+            }
+        }
+    }
+}

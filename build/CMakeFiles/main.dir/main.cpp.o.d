@@ -1010,4 +1010,27 @@ CMakeFiles/main.dir/main.cpp.o: /Users/yun/Desktop/cg_project/main.cpp \
   /opt/homebrew/Cellar/glm/1.0.1/include/glm/vector_relational.hpp \
   /opt/homebrew/Cellar/glm/1.0.1/include/glm/integer.hpp \
   /opt/homebrew/Cellar/glm/1.0.1/include/glm/detail/func_integer.inl \
+  /opt/homebrew/Cellar/glm/1.0.1/include/glm/gtc/matrix_transform.hpp \
+  /opt/homebrew/Cellar/glm/1.0.1/include/glm/gtc/../mat4x4.hpp \
+  /opt/homebrew/Cellar/glm/1.0.1/include/glm/gtc/../vec2.hpp \
+  /opt/homebrew/Cellar/glm/1.0.1/include/glm/gtc/../vec3.hpp \
+  /opt/homebrew/Cellar/glm/1.0.1/include/glm/gtc/../vec4.hpp \
+  /opt/homebrew/Cellar/glm/1.0.1/include/glm/gtc/../ext/matrix_projection.hpp \
+  /opt/homebrew/Cellar/glm/1.0.1/include/glm/./ext/../gtc/constants.hpp \
+  /opt/homebrew/Cellar/glm/1.0.1/include/glm/gtc/../ext/scalar_constants.hpp \
+  /opt/homebrew/Cellar/glm/1.0.1/include/glm/./ext/scalar_constants.inl \
+  /opt/homebrew/Cellar/glm/1.0.1/include/glm/gtc/constants.inl \
+  /opt/homebrew/Cellar/glm/1.0.1/include/glm/./ext/../geometric.hpp \
+  /opt/homebrew/Cellar/glm/1.0.1/include/glm/./ext/../trigonometric.hpp \
+  /opt/homebrew/Cellar/glm/1.0.1/include/glm/./ext/../matrix.hpp \
+  /opt/homebrew/Cellar/glm/1.0.1/include/glm/./ext/matrix_projection.inl \
+  /opt/homebrew/Cellar/glm/1.0.1/include/glm/gtc/../ext/matrix_clip_space.hpp \
+  /opt/homebrew/Cellar/glm/1.0.1/include/glm/./ext/../ext/scalar_constants.hpp \
+  /opt/homebrew/Cellar/glm/1.0.1/include/glm/./ext/matrix_clip_space.inl \
+  /opt/homebrew/Cellar/glm/1.0.1/include/glm/gtc/../ext/matrix_transform.hpp \
+  /opt/homebrew/Cellar/glm/1.0.1/include/glm/./ext/matrix_transform.inl \
+  /opt/homebrew/Cellar/glm/1.0.1/include/glm/gtc/matrix_transform.inl \
+  /opt/homebrew/Cellar/glm/1.0.1/include/glm/gtc/../geometric.hpp \
+  /opt/homebrew/Cellar/glm/1.0.1/include/glm/gtc/../trigonometric.hpp \
+  /opt/homebrew/Cellar/glm/1.0.1/include/glm/gtc/../matrix.hpp \
   /Users/yun/Desktop/cg_project/cone_builder.hpp

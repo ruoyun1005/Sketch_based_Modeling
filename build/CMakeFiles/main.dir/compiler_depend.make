@@ -1881,6 +1881,7 @@ CMakeFiles/main.dir/main.cpp.o: /Users/yun/Desktop/cg_project/main.cpp \
   /opt/homebrew/Cellar/glm/1.0.1/include/glm/detail/type_vec2.hpp \
   /opt/homebrew/Cellar/glm/1.0.1/include/glm/detail/type_vec3.hpp \
   /opt/homebrew/Cellar/glm/1.0.1/include/glm/detail/type_vec4.hpp \
+  /opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/scalar_constants.hpp \
   /opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/scalar_int_sized.hpp \
   /opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/scalar_uint_sized.hpp \
   /opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/vector_int2.hpp \
@@ -1889,6 +1890,11 @@ CMakeFiles/main.dir/main.cpp.o: /Users/yun/Desktop/cg_project/main.cpp \
   /opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/vector_uint2.hpp \
   /opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/vector_uint3.hpp \
   /opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/vector_uint4.hpp \
+  /opt/homebrew/Cellar/glm/1.0.1/include/glm/geometric.hpp \
+  /opt/homebrew/Cellar/glm/1.0.1/include/glm/gtc/constants.hpp \
+  /opt/homebrew/Cellar/glm/1.0.1/include/glm/matrix.hpp \
+  /opt/homebrew/Cellar/glm/1.0.1/include/glm/trigonometric.hpp \
+  /opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/matrix_clip_space.inl \
   /opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/matrix_double2x2.hpp \
   /opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/matrix_double2x2_precision.hpp \
   /opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/matrix_double2x3.hpp \
@@ -1925,6 +1931,9 @@ CMakeFiles/main.dir/main.cpp.o: /Users/yun/Desktop/cg_project/main.cpp \
   /opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/matrix_float4x3_precision.hpp \
   /opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/matrix_float4x4.hpp \
   /opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/matrix_float4x4_precision.hpp \
+  /opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/matrix_projection.inl \
+  /opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/matrix_transform.inl \
+  /opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/scalar_constants.inl \
   /opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/vector_bool2.hpp \
   /opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/vector_bool2_precision.hpp \
   /opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/vector_bool3.hpp \
@@ -2000,6 +2009,20 @@ CMakeFiles/main.dir/main.cpp.o: /Users/yun/Desktop/cg_project/main.cpp \
   /opt/homebrew/Cellar/glm/1.0.1/include/glm/fwd.hpp \
   /opt/homebrew/Cellar/glm/1.0.1/include/glm/geometric.hpp \
   /opt/homebrew/Cellar/glm/1.0.1/include/glm/glm.hpp \
+  /opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/matrix_clip_space.hpp \
+  /opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/matrix_projection.hpp \
+  /opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/matrix_transform.hpp \
+  /opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/scalar_constants.hpp \
+  /opt/homebrew/Cellar/glm/1.0.1/include/glm/geometric.hpp \
+  /opt/homebrew/Cellar/glm/1.0.1/include/glm/mat4x4.hpp \
+  /opt/homebrew/Cellar/glm/1.0.1/include/glm/matrix.hpp \
+  /opt/homebrew/Cellar/glm/1.0.1/include/glm/trigonometric.hpp \
+  /opt/homebrew/Cellar/glm/1.0.1/include/glm/vec2.hpp \
+  /opt/homebrew/Cellar/glm/1.0.1/include/glm/vec3.hpp \
+  /opt/homebrew/Cellar/glm/1.0.1/include/glm/vec4.hpp \
+  /opt/homebrew/Cellar/glm/1.0.1/include/glm/gtc/constants.inl \
+  /opt/homebrew/Cellar/glm/1.0.1/include/glm/gtc/matrix_transform.hpp \
+  /opt/homebrew/Cellar/glm/1.0.1/include/glm/gtc/matrix_transform.inl \
   /opt/homebrew/Cellar/glm/1.0.1/include/glm/integer.hpp \
   /opt/homebrew/Cellar/glm/1.0.1/include/glm/mat2x2.hpp \
   /opt/homebrew/Cellar/glm/1.0.1/include/glm/mat2x3.hpp \
@@ -2018,6 +2041,20 @@ CMakeFiles/main.dir/main.cpp.o: /Users/yun/Desktop/cg_project/main.cpp \
   /opt/homebrew/Cellar/glm/1.0.1/include/glm/vec4.hpp \
   /opt/homebrew/Cellar/glm/1.0.1/include/glm/vector_relational.hpp
 
+
+/opt/homebrew/Cellar/glm/1.0.1/include/glm/gtc/matrix_transform.inl:
+
+/opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/matrix_transform.hpp:
+
+/opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/matrix_projection.hpp:
+
+/opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/scalar_constants.inl:
+
+/opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/matrix_clip_space.inl:
+
+/opt/homebrew/Cellar/glm/1.0.1/include/glm/gtc/constants.hpp:
+
+/opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/scalar_constants.hpp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/ostream:
 
@@ -2521,6 +2558,8 @@ CMakeFiles/main.dir/main.cpp.o: /Users/yun/Desktop/cg_project/main.cpp \
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__type_traits/is_trivially_copy_constructible.h:
 
+/opt/homebrew/Cellar/glm/1.0.1/include/glm/gtc/constants.inl:
+
 /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__type_traits/is_trivially_constructible.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__type_traits/is_trivially_assignable.h:
@@ -2819,6 +2858,8 @@ CMakeFiles/main.dir/main.cpp.o: /Users/yun/Desktop/cg_project/main.cpp \
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__utility/integer_sequence.h:
 
+/opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/matrix_transform.inl:
+
 /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/algorithm:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__iterator/concepts.h:
@@ -3062,6 +3103,8 @@ CMakeFiles/main.dir/main.cpp.o: /Users/yun/Desktop/cg_project/main.cpp \
 /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__format/format_arg.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__format/enable_insertable.h:
+
+/opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/matrix_clip_space.hpp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__format/buffer.h:
 
@@ -3390,6 +3433,8 @@ CMakeFiles/main.dir/main.cpp.o: /Users/yun/Desktop/cg_project/main.cpp \
 /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/sys/_types/_pid_t.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__algorithm/ranges_unique.h:
+
+/opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/matrix_projection.inl:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__algorithm/ranges_swap_ranges.h:
 
@@ -3988,6 +4033,8 @@ CMakeFiles/main.dir/main.cpp.o: /Users/yun/Desktop/cg_project/main.cpp \
 /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__charconv/to_chars_base_10.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/c++/v1/__fwd/pair.h:
+
+/opt/homebrew/Cellar/glm/1.0.1/include/glm/gtc/matrix_transform.hpp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/usr/include/sys/_types/_ucontext.h:
 

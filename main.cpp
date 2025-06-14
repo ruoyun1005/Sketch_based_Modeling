@@ -4,125 +4,124 @@
 #include <OpenGL/glu.h>
 #include <vector>
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include "cone_builder.hpp"
 
 GLuint vao, vbo;
 using namespace glm;
 using namespace std;
 
-
-
+//記錄上次點的是哪一個視圖
+enum  ViewID {
+    View_front = 0,
+    View_top = 1,
+    View_left = 2,
+};
+//每一次點擊就發生一次事件：記錄在哪一張畫布話畫點的座標
+struct SnapEvent {
+    ViewID view;//在哪個圖
+    float a, b;// 座標
+};
+vector<SnapEvent> snapEvents;
 vector<Point> linePoints_front;
 vector<Point> linePoints_left;
 vector<Point> linePoints_top;
 vector<vec3> Triangle_vertices_front;
 vector<vec3> Triangle_vertices_top;
 vector<vec3> Triangle_vertices_left;
+vector<vec3> allvertices;
 
 
+bool showSnapLines = false;
+ViewID lastview = View_top;
+float snapX = 0.0f, snapY = 0.0f, snapZ = 0.0f;// 記錄上記錄上次點擊時的座標分量
+
+
+float theta = 0.0f;
+float phi = 0.0f;
+mat4x4 transformMat = mat4x4(1);
+
+float radius = 1.0f;
+vec3 cameraPos(2.0f, 2.0f, radius);
+vec3 cameraUp(0.0f, 0.0f, 1.0f);
 
 bool shouldFill = false;
 
+// --------------------------------------------------
 // 滑鼠按下記錄點
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
         int width, height;
         glfwGetWindowSize(window, &width, &height);
-        double xpos, ypos;
+        double xpos, ypos;// 取得滑鼠游標
         glfwGetCursorPos(window, &xpos, &ypos);
         
         ypos = height - ypos;
 
-        
-
         int halfW = width / 2;
         int halfH = height / 2;
 
-        float nx, ny;
+        float localX, localY;
+        
+        float nx = (float)( xpos / (width/2) * 2.0 - 1.0 );   // 依照不同區域會改
+        float ny = (float)( ypos / (height/2) * 2.0 - 1.0 );
+        const float step = 0.1f;// 網格間隔
 
         if (xpos < halfW && ypos < halfH) {
             // 左下畫布 (YZ)
-            nx = xpos / halfW * 2.0f - 1.0f;
-            ny = ypos / halfH * 2.0f - 1.0f;
-            linePoints_front.push_back({nx, ny});
+            localX = xpos / halfW * 2.0f - 1.0f;
+            localY = ypos / halfH * 2.0f - 1.0f;
+            
+            
+            float snappedX = round(localX / step) * step;
+            float snappedY = round(localY / step) * step;       
+            linePoints_front.push_back({snappedX, snappedY});
+            lastview = View_front;
+            snapZ = snappedX;
+            snapY = snappedY;
+            snapEvents.push_back({View_front, snapZ, snapY});
         } 
         else if (xpos < halfW && ypos >= halfH) {
             // 左上畫布 (XY)
-            nx = xpos / halfW * 2.0f - 1.0f;
-            ny = (ypos - halfH) / halfH * 2.0f - 1.0f;
-            linePoints_top.push_back({nx, ny});
+            localX = xpos / halfW * 2.0f - 1.0f;
+            localY = (ypos - halfH) / halfH * 2.0f - 1.0f;
+
+            float step = 0.1f;
+            float snappedX = round(localX / step) * step;
+            float snappedY = round(localY / step) * step;       
+            linePoints_top.push_back({snappedX, snappedY});
+            lastview = View_top;
+            snapX = snappedX;
+            snapY = snappedY;
+            snapEvents.push_back({View_top, snapX, snapY});
         } 
         else if (xpos >= halfW && ypos < halfH) {
             // 右下畫布 (XZ)
-            nx = (xpos - halfW) / halfW * 2.0f - 1.0f;
-            ny = (ypos - 0) / halfH * 2.0f - 1.0f;
-            linePoints_left.push_back({nx, ny});
+            localX = (xpos - halfW) / halfW * 2.0f - 1.0f;
+            localY = (ypos - 0) / halfH * 2.0f - 1.0f;
+
+            float step = 0.1f;
+            float snappedX = round(localX / step) * step;
+            float snappedY = round(localY / step) * step;       
+            linePoints_left.push_back({snappedX, snappedY});
+            lastview = View_left;
+            snapX = snappedX;
+            snapZ = snappedY;
+            snapEvents.push_back({View_left, snapX, snapZ});
         }
+        showSnapLines = true;
     }
-}
-// 用滑鼠旋轉座標
-float lastX = 400, lastY = 300;
-bool firstMouse = true;
-float yaw = -90.0f, pitch = 0.0f;
-float radius = 3.0f;
-vec3 cameraPos(0.0f, 0.0f, radius);
-vec3 cameraFront(0.0f, 0.0f, -1.0f);
-vec3 cameraUp(0.0f, 1.0f, 0.0f);
-
-//確認滑鼠座標位置
-bool isInUpperRight(int x, int y, int windowWidth, int windowHeight) {
-    return (x > windowWidth / 2 && y < windowHeight / 2);
-}
-
-void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
-    int winW, winH;
-    glfwGetFramebufferSize(window, &winW, &winH);
-
-    if (!isInUpperRight(xpos, ypos, winW, winH))
-        return;// 不在右上角，不處理滑鼠旋轉
-    
-    if(firstMouse){
-        lastX = xpos;
-        lastY = ypos;
-        firstMouse = false;
-    }
-    float xoffset = xpos - lastX;// 計算偏移量
-    float yoffset = ypos - lastY;
-    lastX = xpos;
-    lastY = ypos;
-
-    float sensitivity = 0.1f;
-    xoffset *= sensitivity;// 控制滑鼠靈敏度
-    yoffset *= sensitivity;
-
-    yaw += xoffset;// 控制左右旋轉
-    pitch += yoffset;// 控制上下旋轉
-
-    // 限制旋轉角度
-    // note: yaw 不需要限制，因為它可以繞水平軸無限旋轉
-    if (pitch > 89.0f)
-        pitch = 89.0f;
-    if (pitch < -89.0f)
-        pitch = -89.0f;
-    
-    float radYaw = radians(yaw);// 把角度換成弧度
-    float radPitch = radians(pitch);
-
-    cameraPos.x = radius * cos(radPitch) * cos(radYaw);// 計算鏡頭位置
-    cameraPos.y = radius * sin(radPitch);
-    cameraPos.z = radius * cos(radPitch) * sin(radYaw);
-
 }
 
 void init(){
     vector<Point> contour_xy = linePoints_top;
-    Triangle_vertices_top = buildCone_xy(contour_xy, 0.5f);
+    Triangle_vertices_top = buildCylinderXY(contour_xy, 2.0f);
 
     vector<Point> contour_xz = linePoints_left;
-    Triangle_vertices_left = buildCone_xz(contour_xz, 0.5f);
+    Triangle_vertices_left = buildCylinderXZ(contour_xz, 2.0f);
 
     vector<Point> contour_yz = linePoints_front;
-    Triangle_vertices_front = buildCone_yz(contour_yz, 0.5f);
+    Triangle_vertices_front = buildCylinderYZ(contour_yz, 2.0f);
 
     glGenVertexArrays(1, &vao); //建立 VAO 的 ID 編號
     glGenBuffers(1, &vbo);  // 存放頂點的實體gpu記憶體區塊
@@ -130,17 +129,21 @@ void init(){
     glBindVertexArray(vao); // 關於頂點的設定都存進這個 VAO
     glBindBuffer(GL_ARRAY_BUFFER, vbo); // 告訴 opengl接下來要對哪個 buffer 操作 類型是「頂點資料」
 
-    glBufferData(GL_ARRAY_BUFFER, Triangle_vertices_top.size() * sizeof(vec3), Triangle_vertices_top.data(), GL_STATIC_DRAW);// 把資料丟進vbo
-    glBufferData(GL_ARRAY_BUFFER, Triangle_vertices_left.size() * sizeof(vec3), Triangle_vertices_left.data(), GL_STATIC_DRAW); 
-    glBufferData(GL_ARRAY_BUFFER, Triangle_vertices_front.size() * sizeof(vec3), Triangle_vertices_front.data(), GL_STATIC_DRAW);
+    allvertices.insert(allvertices.end(), Triangle_vertices_top.begin(), Triangle_vertices_top.end());
+    allvertices.insert(allvertices.end(), Triangle_vertices_left.begin(), Triangle_vertices_left.end());
+    allvertices.insert(allvertices.end(), Triangle_vertices_front.begin(), Triangle_vertices_front.end());
+    glBufferData(GL_ARRAY_BUFFER, allvertices.size() * sizeof(vec3), allvertices.data(), GL_STATIC_DRAW);// 把資料丟進vbo
+    
     glEnableVertexAttribArray(0); // 啟用頂點屬性
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vec3), (void*)0); 
 
     glBindVertexArray(0); // 取消綁定 VAO
 }
 
+// --------------------------------------------------
 // 鍵盤按下處理
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    //std::cout << "Key pressed: " << key << ", action: " << action << std::endl;
     if (action == GLFW_PRESS) {
         if (key == GLFW_KEY_C) {  // Clear
             linePoints_top.clear();
@@ -153,15 +156,53 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
             init();
         }
     }
+    // 用鍵盤（上下左右）控制右上視窗旋轉
+    const float angleStep = M_PI / 90.0f;
+    if (action == GLFW_PRESS || action == GLFW_REPEAT){
+        
+        switch (key){
+            case GLFW_KEY_LEFT:
+                theta += angleStep;
+                break;
+            case GLFW_KEY_RIGHT:
+                theta -= angleStep;
+                break;
+            case GLFW_KEY_UP:
+                phi += angleStep;
+                break;
+            case GLFW_KEY_DOWN:
+                phi -= angleStep;
+                break;
+            case GLFW_KEY_MINUS:
+                theta = 0.0f;
+                phi = 0.0f;
+                transformMat = mat4x4(1);
+            return;
+        }
+        transformMat = rotate(mat4x4(1),
+                                   phi, vec3(1.0f, 0.0f, 0.0f));
+        transformMat = rotate(transformMat,
+                                   theta, vec3(0.0f, 0.0f, 1.0f));
+    }
 }
+// --------------------------------------------------
+//      處理四個畫布
+// --------------------------------------------------
 
 void render(){
     if (Triangle_vertices_top.empty()|| Triangle_vertices_left.empty()) return;
+    int offset_top = 0;
+    int offset_left = Triangle_vertices_top.size();
+    int offset_front = offset_left + Triangle_vertices_left.size();
     glBindVertexArray(vao);
-    glDrawArrays(GL_TRIANGLES, 0, Triangle_vertices_top.size());
-    glDrawArrays(GL_TRIANGLES, 0, Triangle_vertices_left.size());
-    glDrawArrays(GL_TRIANGLES, 0, Triangle_vertices_front.size());
+    glColor3f(0.8, 0.0, 0.0);
+    glDrawArrays(GL_TRIANGLES, offset_top, Triangle_vertices_top.size());
+    glColor3f(0.0, 0.8, 0.0);
+    glDrawArrays(GL_TRIANGLES, offset_left, Triangle_vertices_left.size());
+    glColor3f(0.0, 0.0, 0.8);
+    glDrawArrays(GL_TRIANGLES, offset_front, Triangle_vertices_front.size());
     glBindVertexArray(0);
+
 }
 void setupViewport(int x, int y, int w, int h){
     glViewport(x, y, w, h);
@@ -181,11 +222,12 @@ void setupViewport_render(int x, int y, int w, int h){
         0.0, 0.0, 0.0,  // 看向原點
         cameraUp.x, cameraUp.y, cameraUp.z   // 上方向
     );
+    glMultMatrixf(&transformMat[0][0]);
 
 }
 
 void draw_left_canvas(const vector<Point>& points) {
-    glLineWidth(2.0f);
+    glLineWidth(3.0f);
     glColor3f(0, 0, 1); // 藍色
     glBegin(GL_LINE_STRIP);
     for (auto& p : points)
@@ -193,25 +235,20 @@ void draw_left_canvas(const vector<Point>& points) {
     glEnd();
 }
 
-void draw_right_shape(const vector<Point>& points) {
-    glLineWidth(2.0f);
-    glColor3f(1, 0, 0); // 紅色
-    if (shouldFill && points.size() >= 3) {
-        glBegin(GL_POLYGON);
-        for (auto& p : points)
-            glVertex2f(p.x, p.y);
-        glEnd();
-    }
-}
-
+// --------------------------------------------------
+//      畫線
+// --------------------------------------------------
 void draw_grid(int size = 10){
     glBegin(GL_LINES);
+    glLineWidth(1.0f);
     glColor3f(0.3, 0.3, 0.3);
     for(int i = 1; i< size; i++){
+        // 垂直線
         glVertex2f(i, -size);
         glVertex2f(i, size);
         glVertex2f(-i, -size);
         glVertex2f(-i, size);
+        // 水平線
         glVertex2f(-size, i);
         glVertex2f(size, i);
         glVertex2f(-size, -i);
@@ -236,6 +273,80 @@ void draw_grid(int size = 10){
     glEnd();
 }
 
+// 畫線輔助線
+void drawSnapLinesFront() {
+    for (auto &e : snapEvents) {
+        if (e.view == View_front) 
+          continue;  // 跳過自己在 YZ 視圖裡的事件
+    
+        glColor3f(0.5,0.5,0.5);
+        glLineWidth(2);
+        glBegin(GL_LINES);
+    
+          // 垂直線：Z = snapZ
+          glVertex2f(e.a, -1.0f);
+          glVertex2f(e.a, +1.0f);
+    
+          // 水平線： Y = snapY
+          glVertex2f(-1.0f, e.b);
+          glVertex2f(+1.0f, e.b);
+    
+        glEnd();
+      }
+}
+
+void drawSnapLinesTop() {
+    for(auto &e : snapEvents){
+        if(e.view == View_top)
+            continue;
+        glColor3f(0.5,0.5,0.5);
+        glLineWidth(2);
+        glBegin(GL_LINES);
+        // 垂直線：X = snapX
+        glVertex2f(snapX, -1.f);
+        glVertex2f(snapX, +1.f);
+        // 水平線：Y = snapY
+        glVertex2f(-1.f, snapY);
+        glVertex2f(+1.f, snapY);
+        glEnd();
+}
+}
+
+void drawSnapLinesLeft() {
+    for (auto &e : snapEvents){
+        if(e.view == View_left)
+            continue;
+        glColor3f(0.5,0.5,0.5);
+        glLineWidth(2);
+        glBegin(GL_LINES);
+        // 垂直線：X = snapX
+        glVertex2f(snapX, -1.f);
+        glVertex2f(snapX, +1.f);
+        // 水平線：Z = snapZ
+        glVertex2f(-1.f, snapZ);
+        glVertex2f(+1.f, snapZ);
+        glEnd();
+}
+}
+//畫布輔助線
+void draw_guidelines() {
+    glLineWidth(3.0f);
+    // 畫 X=0 軸
+    glColor3f(1.0f, 0.0f, 0.0f);
+    glBegin(GL_LINES);
+      glVertex2f(-1.0f, 0.0f);
+      glVertex2f( 1.0f, 0.0f);
+    glEnd();
+    // 畫 Y=0 軸
+    glColor3f(0.0f, 1.0f, 0.0f);
+    glBegin(GL_LINES);
+      glVertex2f(0.0f, -1.0f);
+      glVertex2f(0.0f,  1.0f);
+    glEnd();
+    glLineWidth(1.0f);
+}
+// --------------------------------------------------
+
 int main() {
     glfwInit();
     
@@ -245,8 +356,6 @@ int main() {
     glEnable(GL_DEPTH_TEST);
 
     glfwSetMouseButtonCallback(window, mouse_button_callback);
-    glfwSetCursorPosCallback(window, mouse_callback);
-
     glfwSetKeyCallback(window, key_callback);
     
 
@@ -254,4 +363,65 @@ int main() {
         int width, height;
         glfwGetFramebufferSize(window, &width, &height);
         glClearColor(1.0, 1.0, 1.0, 1.0);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BU
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        
+        
+
+        // 左下邊畫線視窗（yz）
+        setupViewport(0, 0, width / 2, height/2);
+        draw_grid();
+        draw_guidelines();
+        draw_left_canvas(linePoints_front);
+        drawSnapLinesFront();
+        glFlush(); // 送到 GPU 去執行
+
+        // 左上邊畫線視窗（xy）
+        setupViewport(0, height/2, width / 2, height/2);
+        draw_grid();
+        draw_guidelines();
+        draw_left_canvas(linePoints_top);
+        drawSnapLinesTop();
+        glFlush();
+
+        // 右下邊畫線視窗（xz）
+        setupViewport(width / 2, 0, width / 2, height/2);
+        draw_grid();
+        draw_guidelines();
+        draw_left_canvas(linePoints_left);
+        drawSnapLinesLeft();
+        glFlush();
+
+        // 右上邊生成視窗
+        setupViewport_render(width / 2, height/2, width / 2, height/2);
+        
+        draw_grid();
+        render();
+        glFlush();
+        //draw_right_shape();
+        
+        //分隔線
+        glViewport(0, 0, width, height);
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glOrtho(0, width, 0, height, -1, 1);
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+
+        glColor3f(0, 0, 0);
+        glBegin(GL_LINES);
+        glVertex2f(width / 2, 0);
+        glVertex2f(width / 2, height);
+        glVertex2f(0, height / 2);
+        glVertex2f(width, height / 2);
+        glEnd();
+        
+        
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
+
+    glfwTerminate();
+}

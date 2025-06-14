@@ -5,7 +5,7 @@ using namespace std;
 using namespace glm;
 
 // 生成柱體(xy平面延伸)
-vector<vec3> buildCone_xy(const vector<Point>&contour, float height){
+vector<vec3> buildCylinderXY(const vector<Point>&contour, float height){
     vector<vec3> vertices;
     
     for (size_t i = 0; i < contour.size(); i++){
@@ -62,7 +62,7 @@ vector<vec3> buildCone_xy(const vector<Point>&contour, float height){
 }
 
 // 生成柱體(xz平面延伸)
-vector<vec3> buildCone_xz(const vector<Point>&contour, float height){
+vector<vec3> buildCylinderXZ(const vector<Point>&contour, float height){
     vector<vec3> vertices;
     
     for (size_t i = 0; i < contour.size(); i++){
@@ -121,7 +121,7 @@ vector<vec3> buildCone_xz(const vector<Point>&contour, float height){
 }
 
 // 生成柱體(yz平面延伸)
-vector<vec3> buildCone_yz(const vector<Point>&contour, float height){
+vector<vec3> buildCylinderYZ(const vector<Point>&contour, float height){
     vector<vec3> vertices;
     
     for (size_t i = 0; i < contour.size(); i++){

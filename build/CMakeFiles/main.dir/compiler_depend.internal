@@ -1883,6 +1883,7 @@ CMakeFiles/main.dir/main.cpp.o
  /opt/homebrew/Cellar/glm/1.0.1/include/glm/detail/type_vec2.hpp
  /opt/homebrew/Cellar/glm/1.0.1/include/glm/detail/type_vec3.hpp
  /opt/homebrew/Cellar/glm/1.0.1/include/glm/detail/type_vec4.hpp
+ /opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/scalar_constants.hpp
  /opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/scalar_int_sized.hpp
  /opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/scalar_uint_sized.hpp
  /opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/vector_int2.hpp
@@ -1891,6 +1892,11 @@ CMakeFiles/main.dir/main.cpp.o
  /opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/vector_uint2.hpp
  /opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/vector_uint3.hpp
  /opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/vector_uint4.hpp
+ /opt/homebrew/Cellar/glm/1.0.1/include/glm/geometric.hpp
+ /opt/homebrew/Cellar/glm/1.0.1/include/glm/gtc/constants.hpp
+ /opt/homebrew/Cellar/glm/1.0.1/include/glm/matrix.hpp
+ /opt/homebrew/Cellar/glm/1.0.1/include/glm/trigonometric.hpp
+ /opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/matrix_clip_space.inl
  /opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/matrix_double2x2.hpp
  /opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/matrix_double2x2_precision.hpp
  /opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/matrix_double2x3.hpp
@@ -1927,6 +1933,9 @@ CMakeFiles/main.dir/main.cpp.o
  /opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/matrix_float4x3_precision.hpp
  /opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/matrix_float4x4.hpp
  /opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/matrix_float4x4_precision.hpp
+ /opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/matrix_projection.inl
+ /opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/matrix_transform.inl
+ /opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/scalar_constants.inl
  /opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/vector_bool2.hpp
  /opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/vector_bool2_precision.hpp
  /opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/vector_bool3.hpp
@@ -2002,6 +2011,20 @@ CMakeFiles/main.dir/main.cpp.o
  /opt/homebrew/Cellar/glm/1.0.1/include/glm/fwd.hpp
  /opt/homebrew/Cellar/glm/1.0.1/include/glm/geometric.hpp
  /opt/homebrew/Cellar/glm/1.0.1/include/glm/glm.hpp
+ /opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/matrix_clip_space.hpp
+ /opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/matrix_projection.hpp
+ /opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/matrix_transform.hpp
+ /opt/homebrew/Cellar/glm/1.0.1/include/glm/ext/scalar_constants.hpp
+ /opt/homebrew/Cellar/glm/1.0.1/include/glm/geometric.hpp
+ /opt/homebrew/Cellar/glm/1.0.1/include/glm/mat4x4.hpp
+ /opt/homebrew/Cellar/glm/1.0.1/include/glm/matrix.hpp
+ /opt/homebrew/Cellar/glm/1.0.1/include/glm/trigonometric.hpp
+ /opt/homebrew/Cellar/glm/1.0.1/include/glm/vec2.hpp
+ /opt/homebrew/Cellar/glm/1.0.1/include/glm/vec3.hpp
+ /opt/homebrew/Cellar/glm/1.0.1/include/glm/vec4.hpp
+ /opt/homebrew/Cellar/glm/1.0.1/include/glm/gtc/constants.inl
+ /opt/homebrew/Cellar/glm/1.0.1/include/glm/gtc/matrix_transform.hpp
+ /opt/homebrew/Cellar/glm/1.0.1/include/glm/gtc/matrix_transform.inl
  /opt/homebrew/Cellar/glm/1.0.1/include/glm/integer.hpp
  /opt/homebrew/Cellar/glm/1.0.1/include/glm/mat2x2.hpp
  /opt/homebrew/Cellar/glm/1.0.1/include/glm/mat2x3.hpp

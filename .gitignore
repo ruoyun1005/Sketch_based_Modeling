@@ -1,0 +1,9 @@
+# 忽略 macOS 系統產生的檔案
+.DS_Store
+
+# 忽略整個 build 資料夾
+/build/
+
+# 忽略編譯輸出
+*.o
+main

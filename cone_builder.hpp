@@ -12,8 +12,8 @@ struct Point{
     float x, y;
 };
 
-vector<vec3> buildCone_xy(const vector<Point>&contour, float height);// xy平面 左上角視窗
-vector<vec3> buildCone_xz(const vector<Point>&contour, float height);// xz平面 右下角視窗
-vector<vec3> buildCone_yz(const vector<Point>&contour, float height);// yz平面 左下角視窗
+vector<vec3> buildCylinderXY(const vector<Point>&contour, float height);// xy平面 左上角視窗
+vector<vec3> buildCylinderXZ(const vector<Point>&contour, float height);// xz平面 右下角視窗
+vector<vec3> buildCylinderYZ(const vector<Point>&contour, float height);// yz平面 左下角視窗
 
 #endif

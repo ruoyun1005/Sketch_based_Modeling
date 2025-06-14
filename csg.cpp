@@ -68,6 +68,26 @@ Polyhedron clipByPlane(const Polyhedron& P, const Plane& pl){
             if(inA && inB){
                 output.push_back(b);
             }
+            if(inA && !inB){
+                output.push_back(intersectPlane(a, b, pl));
+            }
+            if(!inA && inB){
+                output.push_back(intersectPlane(a, b, pl));
+                output.push_back(b);
+            }
+        }
+        //如果裁剪後頂點數 < 3，就忽略
+        if(output.size() < 3) continue;
+
+        //三角化
+        for(size_t i = 1; i+1 < output.size(); i++){
+            int base = (int)out.verts.size();
+
+            out.verts.push_back( output[0] );
+            out.verts.push_back( output[i] );
+            out.verts.push_back( output[i+1] );
+            out.faces.push_back({ base+0, base+1, base+2 });
         }
     }
+    return out;
 }

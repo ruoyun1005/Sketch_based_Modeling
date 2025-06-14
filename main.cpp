@@ -4,8 +4,10 @@
 #include <OpenGL/glu.h>
 #include <vector>
 #include <glm/glm.hpp>
+#include <glm/gtc/epsilon.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include "cone_builder.hpp"
+#include "cylinder_builder.hpp"
+#include "csg.hpp" 
 
 GLuint vao, vbo;
 using namespace glm;
@@ -115,13 +117,28 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 
 void init(){
     vector<Point> contour_xy = linePoints_top;
-    Triangle_vertices_top = buildCylinderXY(contour_xy, 2.0f);
-
+    //Triangle_vertices_top = buildCylinderXY(contour_xy, 2.0f);
     vector<Point> contour_xz = linePoints_left;
-    Triangle_vertices_left = buildCylinderXZ(contour_xz, 2.0f);
-
+    //Triangle_vertices_left = buildCylinderXZ(contour_xz, 2.0f);
     vector<Point> contour_yz = linePoints_front;
-    Triangle_vertices_front = buildCylinderYZ(contour_yz, 2.0f);
+    //Triangle_vertices_front = buildCylinderYZ(contour_yz, 2.0f);
+
+    Solid cylXY = buildCylinderXY(contour_xy, 1.0f);
+    Solid cylXZ = buildCylinderXZ(contour_xz, 1.0f);
+    Solid cylYZ = buildCylinderYZ(contour_yz, 1.0f);
+
+    allvertices.clear();
+
+    auto appendSolid = [&](const Solid& s){
+        for (auto & tri : s.faces) {
+            allvertices.push_back(s.verts[tri[0]]);
+            allvertices.push_back(s.verts[tri[1]]);
+            allvertices.push_back(s.verts[tri[2]]);
+        }
+    };
+    appendSolid(cylXY);
+    appendSolid(cylXZ);
+    appendSolid(cylYZ);
 
     glGenVertexArrays(1, &vao); //建立 VAO 的 ID 編號
     glGenBuffers(1, &vbo);  // 存放頂點的實體gpu記憶體區塊
@@ -129,9 +146,9 @@ void init(){
     glBindVertexArray(vao); // 關於頂點的設定都存進這個 VAO
     glBindBuffer(GL_ARRAY_BUFFER, vbo); // 告訴 opengl接下來要對哪個 buffer 操作 類型是「頂點資料」
 
-    allvertices.insert(allvertices.end(), Triangle_vertices_top.begin(), Triangle_vertices_top.end());
-    allvertices.insert(allvertices.end(), Triangle_vertices_left.begin(), Triangle_vertices_left.end());
-    allvertices.insert(allvertices.end(), Triangle_vertices_front.begin(), Triangle_vertices_front.end());
+    //allvertices.insert(allvertices.end(), Triangle_vertices_top.begin(), Triangle_vertices_top.end());
+    //allvertices.insert(allvertices.end(), Triangle_vertices_left.begin(), Triangle_vertices_left.end());
+    //allvertices.insert(allvertices.end(), Triangle_vertices_front.begin(), Triangle_vertices_front.end());
     glBufferData(GL_ARRAY_BUFFER, allvertices.size() * sizeof(vec3), allvertices.data(), GL_STATIC_DRAW);// 把資料丟進vbo
     
     glEnableVertexAttribArray(0); // 啟用頂點屬性
@@ -190,17 +207,21 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 // --------------------------------------------------
 
 void render(){
-    if (Triangle_vertices_top.empty()|| Triangle_vertices_left.empty()) return;
-    int offset_top = 0;
-    int offset_left = Triangle_vertices_top.size();
-    int offset_front = offset_left + Triangle_vertices_left.size();
+    // if (Triangle_vertices_top.empty()|| Triangle_vertices_left.empty()) return;
+    // int offset_top = 0;
+    // int offset_left = Triangle_vertices_top.size();
+    // int offset_front = offset_left + Triangle_vertices_left.size();
+    // glBindVertexArray(vao);
+    // glColor3f(0.8, 0.0, 0.0);
+    // glDrawArrays(GL_TRIANGLES, offset_top, Triangle_vertices_top.size());
+    // glColor3f(0.0, 0.8, 0.0);
+    // glDrawArrays(GL_TRIANGLES, offset_left, Triangle_vertices_left.size());
+    // glColor3f(0.0, 0.0, 0.8);
+    // glDrawArrays(GL_TRIANGLES, offset_front, Triangle_vertices_front.size());
     glBindVertexArray(vao);
-    glColor3f(0.8, 0.0, 0.0);
-    glDrawArrays(GL_TRIANGLES, offset_top, Triangle_vertices_top.size());
-    glColor3f(0.0, 0.8, 0.0);
-    glDrawArrays(GL_TRIANGLES, offset_left, Triangle_vertices_left.size());
-    glColor3f(0.0, 0.0, 0.8);
-    glDrawArrays(GL_TRIANGLES, offset_front, Triangle_vertices_front.size());
+    // allVertices 裡頭已經是三角形清單了，一次 draw 出來
+    glDrawArrays(GL_TRIANGLES, 0, (GLsizei)allvertices.size());
+    glBindVertexArray(0);
     glBindVertexArray(0);
 
 }
@@ -422,6 +443,6 @@ int main() {
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
-
+    std::cout<<"-> Window created, entering loop\n";
     glfwTerminate();
 }

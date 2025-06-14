@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-#include "cone_builder.hpp"
+#include "cylinder_builder.hpp"
 
 using namespace std;
 using namespace glm;
@@ -9,10 +9,7 @@ using namespace glm;
 enum CSG_op { INTERSECT, UNION, SUBTRACT};
 
 // hlaf plane nx + d >=0
-struct Plane {
-    vec3 n;
-    float d;
-};
+
 
 //多面體 頂點 + 三角形面
 struct Polyhedron {

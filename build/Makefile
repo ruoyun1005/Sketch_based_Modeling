@@ -129,29 +129,53 @@ main/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/build
 .PHONY : main/fast
 
-cone_builder.o: cone_builder.cpp.o
-.PHONY : cone_builder.o
+csg.o: csg.cpp.o
+.PHONY : csg.o
 
 # target to build an object file
-cone_builder.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/cone_builder.cpp.o
-.PHONY : cone_builder.cpp.o
+csg.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/csg.cpp.o
+.PHONY : csg.cpp.o
 
-cone_builder.i: cone_builder.cpp.i
-.PHONY : cone_builder.i
+csg.i: csg.cpp.i
+.PHONY : csg.i
 
 # target to preprocess a source file
-cone_builder.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/cone_builder.cpp.i
-.PHONY : cone_builder.cpp.i
+csg.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/csg.cpp.i
+.PHONY : csg.cpp.i
 
-cone_builder.s: cone_builder.cpp.s
-.PHONY : cone_builder.s
+csg.s: csg.cpp.s
+.PHONY : csg.s
 
 # target to generate assembly for a file
-cone_builder.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/cone_builder.cpp.s
-.PHONY : cone_builder.cpp.s
+csg.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/csg.cpp.s
+.PHONY : csg.cpp.s
+
+cylinder_builder.o: cylinder_builder.cpp.o
+.PHONY : cylinder_builder.o
+
+# target to build an object file
+cylinder_builder.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/cylinder_builder.cpp.o
+.PHONY : cylinder_builder.cpp.o
+
+cylinder_builder.i: cylinder_builder.cpp.i
+.PHONY : cylinder_builder.i
+
+# target to preprocess a source file
+cylinder_builder.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/cylinder_builder.cpp.i
+.PHONY : cylinder_builder.cpp.i
+
+cylinder_builder.s: cylinder_builder.cpp.s
+.PHONY : cylinder_builder.s
+
+# target to generate assembly for a file
+cylinder_builder.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/cylinder_builder.cpp.s
+.PHONY : cylinder_builder.cpp.s
 
 main.o: main.cpp.o
 .PHONY : main.o
@@ -186,9 +210,12 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... main"
-	@echo "... cone_builder.o"
-	@echo "... cone_builder.i"
-	@echo "... cone_builder.s"
+	@echo "... csg.o"
+	@echo "... csg.i"
+	@echo "... csg.s"
+	@echo "... cylinder_builder.o"
+	@echo "... cylinder_builder.i"
+	@echo "... cylinder_builder.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"

@@ -45,6 +45,6 @@ target_link_libraries(commonLib INTERFACE
     ${EXTRA_MAC_LIBS}
 )
 
-add_executable(main main.cpp cone_builder.cpp)
+add_executable(main main.cpp cylinder_builder.cpp csg.cpp)
 target_link_libraries(main PRIVATE commonLib)
 

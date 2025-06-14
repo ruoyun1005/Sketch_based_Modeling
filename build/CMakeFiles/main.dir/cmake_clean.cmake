@@ -1,6 +1,8 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/main.dir/cone_builder.cpp.o"
-  "CMakeFiles/main.dir/cone_builder.cpp.o.d"
+  "CMakeFiles/main.dir/csg.cpp.o"
+  "CMakeFiles/main.dir/csg.cpp.o.d"
+  "CMakeFiles/main.dir/cylinder_builder.cpp.o"
+  "CMakeFiles/main.dir/cylinder_builder.cpp.o.d"
   "CMakeFiles/main.dir/main.cpp.o"
   "CMakeFiles/main.dir/main.cpp.o.d"
   "main"

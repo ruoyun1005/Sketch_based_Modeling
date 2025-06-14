@@ -8,7 +8,8 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/Users/yun/Desktop/cg_project/cone_builder.cpp" "CMakeFiles/main.dir/cone_builder.cpp.o" "gcc" "CMakeFiles/main.dir/cone_builder.cpp.o.d"
+  "/Users/yun/Desktop/cg_project/csg.cpp" "CMakeFiles/main.dir/csg.cpp.o" "gcc" "CMakeFiles/main.dir/csg.cpp.o.d"
+  "/Users/yun/Desktop/cg_project/cylinder_builder.cpp" "CMakeFiles/main.dir/cylinder_builder.cpp.o" "gcc" "CMakeFiles/main.dir/cylinder_builder.cpp.o.d"
   "/Users/yun/Desktop/cg_project/main.cpp" "CMakeFiles/main.dir/main.cpp.o" "gcc" "CMakeFiles/main.dir/main.cpp.o.d"
   )
 

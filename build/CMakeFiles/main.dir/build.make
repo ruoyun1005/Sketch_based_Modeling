@@ -86,33 +86,49 @@ CMakeFiles/main.dir/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/main.dir/main.cpp.s"
 	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/yun/Desktop/cg_project/main.cpp -o CMakeFiles/main.dir/main.cpp.s
 
-CMakeFiles/main.dir/cone_builder.cpp.o: CMakeFiles/main.dir/flags.make
-CMakeFiles/main.dir/cone_builder.cpp.o: /Users/yun/Desktop/cg_project/cone_builder.cpp
-CMakeFiles/main.dir/cone_builder.cpp.o: CMakeFiles/main.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/yun/Desktop/cg_project/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/main.dir/cone_builder.cpp.o"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/main.dir/cone_builder.cpp.o -MF CMakeFiles/main.dir/cone_builder.cpp.o.d -o CMakeFiles/main.dir/cone_builder.cpp.o -c /Users/yun/Desktop/cg_project/cone_builder.cpp
+CMakeFiles/main.dir/cylinder_builder.cpp.o: CMakeFiles/main.dir/flags.make
+CMakeFiles/main.dir/cylinder_builder.cpp.o: /Users/yun/Desktop/cg_project/cylinder_builder.cpp
+CMakeFiles/main.dir/cylinder_builder.cpp.o: CMakeFiles/main.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/yun/Desktop/cg_project/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/main.dir/cylinder_builder.cpp.o"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/main.dir/cylinder_builder.cpp.o -MF CMakeFiles/main.dir/cylinder_builder.cpp.o.d -o CMakeFiles/main.dir/cylinder_builder.cpp.o -c /Users/yun/Desktop/cg_project/cylinder_builder.cpp
 
-CMakeFiles/main.dir/cone_builder.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/main.dir/cone_builder.cpp.i"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/yun/Desktop/cg_project/cone_builder.cpp > CMakeFiles/main.dir/cone_builder.cpp.i
+CMakeFiles/main.dir/cylinder_builder.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/main.dir/cylinder_builder.cpp.i"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/yun/Desktop/cg_project/cylinder_builder.cpp > CMakeFiles/main.dir/cylinder_builder.cpp.i
 
-CMakeFiles/main.dir/cone_builder.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/main.dir/cone_builder.cpp.s"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/yun/Desktop/cg_project/cone_builder.cpp -o CMakeFiles/main.dir/cone_builder.cpp.s
+CMakeFiles/main.dir/cylinder_builder.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/main.dir/cylinder_builder.cpp.s"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/yun/Desktop/cg_project/cylinder_builder.cpp -o CMakeFiles/main.dir/cylinder_builder.cpp.s
+
+CMakeFiles/main.dir/csg.cpp.o: CMakeFiles/main.dir/flags.make
+CMakeFiles/main.dir/csg.cpp.o: /Users/yun/Desktop/cg_project/csg.cpp
+CMakeFiles/main.dir/csg.cpp.o: CMakeFiles/main.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/yun/Desktop/cg_project/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/main.dir/csg.cpp.o"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/main.dir/csg.cpp.o -MF CMakeFiles/main.dir/csg.cpp.o.d -o CMakeFiles/main.dir/csg.cpp.o -c /Users/yun/Desktop/cg_project/csg.cpp
+
+CMakeFiles/main.dir/csg.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/main.dir/csg.cpp.i"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/yun/Desktop/cg_project/csg.cpp > CMakeFiles/main.dir/csg.cpp.i
+
+CMakeFiles/main.dir/csg.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/main.dir/csg.cpp.s"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/yun/Desktop/cg_project/csg.cpp -o CMakeFiles/main.dir/csg.cpp.s
 
 # Object files for target main
 main_OBJECTS = \
 "CMakeFiles/main.dir/main.cpp.o" \
-"CMakeFiles/main.dir/cone_builder.cpp.o"
+"CMakeFiles/main.dir/cylinder_builder.cpp.o" \
+"CMakeFiles/main.dir/csg.cpp.o"
 
 # External object files for target main
 main_EXTERNAL_OBJECTS =
 
 main: CMakeFiles/main.dir/main.cpp.o
-main: CMakeFiles/main.dir/cone_builder.cpp.o
+main: CMakeFiles/main.dir/cylinder_builder.cpp.o
+main: CMakeFiles/main.dir/csg.cpp.o
 main: CMakeFiles/main.dir/build.make
 main: CMakeFiles/main.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/yun/Desktop/cg_project/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable main"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/yun/Desktop/cg_project/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX executable main"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/main.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

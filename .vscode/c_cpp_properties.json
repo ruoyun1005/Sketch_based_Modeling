@@ -6,7 +6,8 @@
                 "${workspaceFolder}/**",
                 "/opt/homebrew/include",
                 "/opt/homebrew/include/GLFW",
-                "/opt/homebrew/Cellar/glfw/3.4"
+                "/opt/homebrew/Cellar/glfw/3.4",
+                "${workspaceFolder}/external/imgui/backends"
             ],
             "defines": [],
             "macFrameworkPath": [

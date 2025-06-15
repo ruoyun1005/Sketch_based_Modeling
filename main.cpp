@@ -9,7 +9,12 @@
 #include "cylinder_builder.hpp"
 #include "csg.hpp" 
 
+// #include "imgui.h"
+// #include "imgui_impl_glfw.h"
+// #include "imgui_impl_opengl3.h"
+
 GLuint vao, vbo;
+
 using namespace glm;
 using namespace std;
 
@@ -44,10 +49,12 @@ float phi = 0.0f;
 mat4x4 transformMat = mat4x4(1);
 
 float radius = 1.0f;
-vec3 cameraPos(2.0f, 2.0f, radius);
+vec3 cameraPos(3.0f, 3.0f, radius);
 vec3 cameraUp(0.0f, 0.0f, 1.0f);
 
 bool shouldFill = false;
+
+CSG_op currentOP = CSG_op::INTERSECT; // 預設布林運算為交集
 
 // --------------------------------------------------
 // 滑鼠按下記錄點
@@ -75,13 +82,13 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
             localY = ypos / halfH * 2.0f - 1.0f;
             
             
-            float snappedX = round(localX / step) * step;
-            float snappedY = round(localY / step) * step;       
-            linePoints_front.push_back({snappedX, snappedY});
+            float snappedY = round(localX / step) * step;
+            float snappedZ = round(localY / step) * step;       
+            linePoints_front.push_back({snappedY, snappedZ});
             lastview = View_front;
-            snapZ = snappedX;
+            snapZ = snappedZ;
             snapY = snappedY;
-            snapEvents.push_back({View_front, snapZ, snapY});
+            snapEvents.push_back({View_front, snapY, snapZ});
         } 
         else if (xpos < halfW && ypos >= halfH) {
             // 左上畫布 (XY)
@@ -112,6 +119,14 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
             snapEvents.push_back({View_left, snapX, snapZ});
         }
         showSnapLines = true;
+    }
+}
+void extractToAllverts(const Polyhedron &P) {
+    allvertices.clear();
+    for (auto &f : P.faces) {
+        allvertices.push_back(P.verts[f[0]]);
+        allvertices.push_back(P.verts[f[1]]);
+        allvertices.push_back(P.verts[f[2]]);
     }
 }
 
@@ -156,10 +171,42 @@ void init(){
 
     glBindVertexArray(0); // 取消綁定 VAO
 }
+void initGL() {
+    glGenVertexArrays(1, &vao);
+    glGenBuffers(1, &vbo);
+    glBindVertexArray(vao);
+      glBindBuffer(GL_ARRAY_BUFFER, vbo);
+      glBufferData(GL_ARRAY_BUFFER, allvertices.size()*sizeof(vec3), allvertices.data(), GL_DYNAMIC_DRAW);
+      glEnableClientState(GL_VERTEX_ARRAY);
+      glVertexPointer(3, GL_FLOAT, sizeof(vec3), (void*)0);
+    glBindVertexArray(0);
+}
+void render3D(int w, int h) {
+    glViewport(0, 0, w, h);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(45.0, (double)w/h, 0.1, 10.0);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    gluLookAt(3,3,3,  0,0,0,  0,0,1);
+
+    // 更新 VBO
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(GL_ARRAY_BUFFER, allvertices.size()*sizeof(vec3), allvertices.data(), GL_DYNAMIC_DRAW);
+
+    // 画线框
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glColor3f(0,1,0);
+    glBindVertexArray(vao);
+      glDrawArrays(GL_TRIANGLES, 0, (GLsizei)allvertices.size());
+    glBindVertexArray(0);
+}
+
 
 // --------------------------------------------------
 // 鍵盤按下處理
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    if (action==GLFW_PRESS) std::cout<<"Key pressed: "<< key << "\n";
     //std::cout << "Key pressed: " << key << ", action: " << action << std::endl;
     if (action == GLFW_PRESS) {
         if (key == GLFW_KEY_C) {  // Clear
@@ -207,24 +254,16 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 // --------------------------------------------------
 
 void render(){
-    // if (Triangle_vertices_top.empty()|| Triangle_vertices_left.empty()) return;
-    // int offset_top = 0;
-    // int offset_left = Triangle_vertices_top.size();
-    // int offset_front = offset_left + Triangle_vertices_left.size();
-    // glBindVertexArray(vao);
-    // glColor3f(0.8, 0.0, 0.0);
-    // glDrawArrays(GL_TRIANGLES, offset_top, Triangle_vertices_top.size());
-    // glColor3f(0.0, 0.8, 0.0);
-    // glDrawArrays(GL_TRIANGLES, offset_left, Triangle_vertices_left.size());
-    // glColor3f(0.0, 0.0, 0.8);
-    // glDrawArrays(GL_TRIANGLES, offset_front, Triangle_vertices_front.size());
+    if (allvertices.empty()) return;
     glBindVertexArray(vao);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     // allVertices 裡頭已經是三角形清單了，一次 draw 出來
     glDrawArrays(GL_TRIANGLES, 0, (GLsizei)allvertices.size());
     glBindVertexArray(0);
     glBindVertexArray(0);
 
 }
+static const float RANGE = 10.f;
 void setupViewport(int x, int y, int w, int h){
     glViewport(x, y, w, h);
     glMatrixMode(GL_PROJECTION);
@@ -324,11 +363,11 @@ void drawSnapLinesTop() {
         glLineWidth(2);
         glBegin(GL_LINES);
         // 垂直線：X = snapX
-        glVertex2f(snapX, -1.f);
-        glVertex2f(snapX, +1.f);
+        glVertex2f(e.a, -1.f);
+        glVertex2f(e.a, +1.f);
         // 水平線：Y = snapY
-        glVertex2f(-1.f, snapY);
-        glVertex2f(+1.f, snapY);
+        glVertex2f(-1.f, e.b);
+        glVertex2f(+1.f, e.b);
         glEnd();
 }
 }
@@ -341,11 +380,11 @@ void drawSnapLinesLeft() {
         glLineWidth(2);
         glBegin(GL_LINES);
         // 垂直線：X = snapX
-        glVertex2f(snapX, -1.f);
-        glVertex2f(snapX, +1.f);
+        glVertex2f(e.a, -1.f);
+        glVertex2f(e.a, +1.f);
         // 水平線：Z = snapZ
-        glVertex2f(-1.f, snapZ);
-        glVertex2f(+1.f, snapZ);
+        glVertex2f(-1.f, e.b);
+        glVertex2f(+1.f, e.b);
         glEnd();
 }
 }
@@ -366,29 +405,63 @@ void draw_guidelines() {
     glEnd();
     glLineWidth(1.0f);
 }
-// --------------------------------------------------
+
+
 
 int main() {
     glfwInit();
     
+    // glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    // glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    // glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    // #ifdef __APPLE__
+    // glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    // #endif
     GLFWwindow* window = glfwCreateWindow(800, 600, "畫布", NULL, NULL);
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);// 穩定幀數
     glEnable(GL_DEPTH_TEST);
 
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     glfwSetMouseButtonCallback(window, mouse_button_callback);
     glfwSetKeyCallback(window, key_callback);
     
+    // 第一次测试
+    
 
     while (!glfwWindowShouldClose(window)) {
+        glfwPollEvents();
+
+        // // 1) 新一幀 ImGui
+        // ImGui_ImplOpenGL3_NewFrame();
+        // ImGui_ImplGlfw_NewFrame();
+        // ImGui::NewFrame();
+
+        // 2) ImGui 繪製
+        // ImGui::Begin("CSG 操作");
+        // if(ImGui::Button("交集(Intersect)")) {
+        //     currentOP = CSG_op::INTERSECT;
+        // }
+        // if(ImGui::Button("聯集(Union)")) {
+        //     currentOP = CSG_op::UNION;
+        // }
+        // if(ImGui::Button("差集(Difference)")) {
+        //     currentOP = CSG_op::DIFFERENCE;
+        // }
+        // ImGui::Text("目前：%s",
+        //     currentOP == CSG_op::INTERSECT ? "交集" :
+        //     currentOP == CSG_op::UNION ? "聯集" :
+        //     currentOP == CSG_op::DIFFERENCE ? "差集" : "未知");
+        // ImGui::End();
+
         int width, height;
         glfwGetFramebufferSize(window, &width, &height);
         glClearColor(1.0, 1.0, 1.0, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        
+        //glClear(GL_COLOR_BUFFER_BIT);
         
 
         // 左下邊畫線視窗（yz）
@@ -438,11 +511,16 @@ int main() {
         glVertex2f(0, height / 2);
         glVertex2f(width, height / 2);
         glEnd();
-        
-        
+    
+        //主畫面渲染
+        //renderImGuiOver();
         glfwSwapBuffers(window);
-        glfwPollEvents();
     }
     std::cout<<"-> Window created, entering loop\n";
+    
+    // ImGui_ImplOpenGL3_Shutdown();
+    // ImGui_ImplGlfw_Shutdown();
+    // ImGui::DestroyContext();
+
     glfwTerminate();
 }

@@ -4,10 +4,11 @@
 using namespace std;
 using namespace glm;
 
-vector<Plane> planes;
+
 
 //生出half plane：把二維的輪廓線
 vector<Plane> silhouettePlanes (const vector<Point>& contour,ViewPlane view){
+    vector<Plane> planes;
     int N = contour.size();
     for (int i = 0; i < N; i++){
         auto a = contour[i];// p_i
@@ -90,4 +91,40 @@ Polyhedron clipByPlane(const Polyhedron& P, const Plane& pl){
         }
     }
     return out;
+}
+
+Polyhedron makePolyFromTriangles(const std::vector<glm::vec3>& triVerts) {
+    Polyhedron P;
+    int triCount = triVerts.size() / 3;
+    for(int i = 0; i < triCount; ++i) {
+        int b = i * 3;
+        // 三角形 (b, b+1, b+2)
+        P.verts.push_back(triVerts[b + 0]);
+        P.verts.push_back(triVerts[b + 1]);
+        P.verts.push_back(triVerts[b + 2]);
+        P.faces.push_back({ b + 0, b + 1, b + 2 });
+    }
+    return P;
+}
+
+Polyhedron makeBoundingCube(float R) {
+    Polyhedron P;
+    // 8 個頂點
+    vector<vec3> V = {
+        { R,  R,  R}, {-R,  R,  R}, {-R, -R,  R}, { R, -R,  R},
+        { R,  R, -R}, {-R,  R, -R}, {-R, -R, -R}, { R, -R, -R},
+    };
+    P.verts = V;
+    // 六個面，每面拆兩個三角形
+    int F[6][4] = {
+      {0,1,2,3}, {4,7,6,5},
+      {0,4,5,1}, {1,5,6,2},
+      {2,6,7,3}, {3,7,4,0}
+    };
+    for(int i=0;i<6;i++){
+      auto &q = F[i];
+      P.faces.push_back({q[0],q[1],q[2]});
+      P.faces.push_back({q[0],q[2],q[3]});
+    }
+    return P;
 }

@@ -4,9 +4,9 @@
 # compile CXX with /Library/Developer/CommandLineTools/usr/bin/c++
 CXX_DEFINES = -DGL_SILENCE_DEPRECATION
 
-CXX_INCLUDES = -I/opt/homebrew/Cellar/glfw/3.4/include -I/opt/homebrew/Cellar/glew/2.2.0_1/include -I/opt/homebrew/Cellar/glm/1.0.1/include
+CXX_INCLUDES = -F/Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk/System/Library/Frameworks -isystem /opt/homebrew/include
 
-CXX_FLAGSarm64 = -std=gnu++11 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk
+CXX_FLAGSarm64 = -g -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -F/Library/Developer/CommandLineTools/SDKs/MacOSX14.sdk/System/Library/Frameworks 
 
-CXX_FLAGS = -std=gnu++11 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk
+CXX_FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -F/Library/Developer/CommandLineTools/SDKs/MacOSX14.sdk/System/Library/Frameworks 
 

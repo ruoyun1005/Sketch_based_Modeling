@@ -1,50 +1,41 @@
-cmake_minimum_required(VERSION 3.2)
-project(hw-gl)
+cmake_minimum_required(VERSION 3.10)
+project(SketchModeling)
 
-find_package(OpenGL REQUIRED)
-find_package(PkgConfig REQUIRED)
-
-pkg_check_modules(GLFW REQUIRED glfw3)
-pkg_check_modules(GLEW REQUIRED glew)
-pkg_check_modules(GLM REQUIRED glm)
-
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+add_definitions(-DGL_SILENCE_DEPRECATION)  # macOS 下隱藏 OpenGL deprecation 警告
 
-# ⚠️ 隱藏特定 warning（可改為 -w 完全關閉）
-add_definitions(-DGL_SILENCE_DEPRECATION)
+# 找你要的 library
+find_package(OpenGL REQUIRED)
+find_package(glfw3 REQUIRED)
+find_package(GLEW REQUIRED)
+find_package(glm REQUIRED)
 
+# 把 external/imgui 當作子專案編譯
+#add_subdirectory(external/imgui)
 
-if(APPLE)
-    find_library(COCOA_FRAMEWORK Cocoa)
-    find_library(IOKIT_FRAMEWORK IOKit)
-    find_library(COREVIDEO_FRAMEWORK CoreVideo)
-    set(EXTRA_MAC_LIBS
-        ${COCOA_FRAMEWORK}
-        ${IOKIT_FRAMEWORK}
-        ${COREVIDEO_FRAMEWORK}
-    )
-endif()
+# 你自己的程式碼
+set(SRCS
+    main.cpp
+    cylinder_builder.cpp
+    csg.cpp
+)
 
-add_library(commonLib INTERFACE)
-target_include_directories(commonLib INTERFACE
-    ${GLFW_INCLUDE_DIRS}
+# 建 executable
+add_executable(main ${SRCS})
+
+# include 路徑
+target_include_directories(main PRIVATE
     ${GLEW_INCLUDE_DIRS}
+    ${GLFW_INCLUDE_DIRS}
     ${GLM_INCLUDE_DIRS}
+    ${OPENGL_INCLUDE_DIRS}
 )
-target_link_directories(commonLib INTERFACE
-    ${GLFW_LIBRARY_DIRS}
-    ${GLEW_LIBRARY_DIRS}
-    ${GLM_LIBRARY_DIRS}
-)
-target_link_libraries(commonLib INTERFACE
+
+# link libraries
+target_link_libraries(main PRIVATE
+    GLEW::GLEW
+    glfw
+    glm::glm
     ${OPENGL_LIBRARIES}
-    ${GLFW_LIBRARIES}
-    ${GLEW_LIBRARIES}
-    ${GLM_LIBRARIES}
-    ${EXTRA_MAC_LIBS}
 )
-
-add_executable(main main.cpp cylinder_builder.cpp csg.cpp)
-target_link_libraries(main PRIVATE commonLib)
-

@@ -13,6 +13,7 @@ struct Point{
     float x, y;
 };
 
+// hlaf plane nx + d >=0
 struct Plane {
     vec3 n;
     float d;

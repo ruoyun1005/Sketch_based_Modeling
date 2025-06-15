@@ -1,5 +1,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/epsilon.hpp>
+#include <iostream>
 #include "cylinder_builder.hpp"
 #include "csg.hpp"
 
@@ -77,6 +78,8 @@ Solid buildCylinderXY(const vector<Point>&contour, float height){
     //S.planes.push_back({{0,0,-1}, height});
     // 頂面 z=H, 內側往下： 0·x+0·y+1·z + (−h) = 0
     //S.planes.push_back({{0,0, 1}, -height});
+    // 在 buildCylinderXY 後添加
+    
     return S;
 }
 

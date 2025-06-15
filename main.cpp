@@ -130,47 +130,65 @@ void extractToAllverts(const Polyhedron &P) {
     }
 }
 
-void init(){
+void init() {
+    // 1. 從全域的 linePoints_* 取出三個視圖的輪廓點
     vector<Point> contour_xy = linePoints_top;
-    //Triangle_vertices_top = buildCylinderXY(contour_xy, 2.0f);
     vector<Point> contour_xz = linePoints_left;
-    //Triangle_vertices_left = buildCylinderXZ(contour_xz, 2.0f);
     vector<Point> contour_yz = linePoints_front;
-    //Triangle_vertices_front = buildCylinderYZ(contour_yz, 2.0f);
 
+    // 2. 生成三個柱體對象
     Solid cylXY = buildCylinderXY(contour_xy, 1.0f);
     Solid cylXZ = buildCylinderXZ(contour_xz, 1.0f);
     Solid cylYZ = buildCylinderYZ(contour_yz, 1.0f);
 
+    // 3. 清空所有頂點容器
     allvertices.clear();
 
-    auto appendSolid = [&](const Solid& s){
-        for (auto & tri : s.faces) {
+    // 4. 定義一個 lambda，將柱體的三角面展開並加入 allvertices
+    auto appendSolid = [&](const Solid& s) {
+        for (const auto& tri : s.faces) {
             allvertices.push_back(s.verts[tri[0]]);
             allvertices.push_back(s.verts[tri[1]]);
             allvertices.push_back(s.verts[tri[2]]);
         }
     };
+
+    // 5. 將三個柱體的頂點依序加入 allvertices
     appendSolid(cylXY);
     appendSolid(cylXZ);
     appendSolid(cylYZ);
 
-    glGenVertexArrays(1, &vao); //建立 VAO 的 ID 編號
-    glGenBuffers(1, &vbo);  // 存放頂點的實體gpu記憶體區塊
+    // 6. 生成 VAO 與 VBO（只需呼叫一次即可）
+    static bool inited = false;
+    if (!inited) {
+        glGenVertexArrays(1, &vao);
+        glGenBuffers(1, &vbo);
+        inited = true;
+    }
 
-    glBindVertexArray(vao); // 關於頂點的設定都存進這個 VAO
-    glBindBuffer(GL_ARRAY_BUFFER, vbo); // 告訴 opengl接下來要對哪個 buffer 操作 類型是「頂點資料」
+    // 7. 綁定 VAO 與 VBO，開始設定頂點緩衝
+    glBindVertexArray(vao);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
-    //allvertices.insert(allvertices.end(), Triangle_vertices_top.begin(), Triangle_vertices_top.end());
-    //allvertices.insert(allvertices.end(), Triangle_vertices_left.begin(), Triangle_vertices_left.end());
-    //allvertices.insert(allvertices.end(), Triangle_vertices_front.begin(), Triangle_vertices_front.end());
-    glBufferData(GL_ARRAY_BUFFER, allvertices.size() * sizeof(vec3), allvertices.data(), GL_STATIC_DRAW);// 把資料丟進vbo
-    
-    glEnableVertexAttribArray(0); // 啟用頂點屬性
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vec3), (void*)0); 
+    // 8. 把 allvertices 資料上傳到 GPU
+    glBufferData(GL_ARRAY_BUFFER,
+                 allvertices.size() * sizeof(vec3),
+                 allvertices.data(),
+                 GL_STATIC_DRAW);
 
-    glBindVertexArray(0); // 取消綁定 VAO
+    // 9. 啟用並設定頂點屬性（位置屬性位於 location = 0）
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0,
+                          3,
+                          GL_FLOAT,
+                          GL_FALSE,
+                          sizeof(vec3),
+                          reinterpret_cast<void*>(0));
+
+    // 10. 解除 VAO 綁定
+    glBindVertexArray(0);
 }
+
 void initGL() {
     glGenVertexArrays(1, &vao);
     glGenBuffers(1, &vbo);

@@ -129,7 +129,6 @@ main: CMakeFiles/main.dir/csg.cpp.o
 main: CMakeFiles/main.dir/build.make
 main: /opt/homebrew/lib/libGLEW.2.2.0.dylib
 main: /opt/homebrew/lib/libglfw.3.4.dylib
-main: /opt/homebrew/lib/libglm.dylib
 main: CMakeFiles/main.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/yun/Desktop/cg_project/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX executable main"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/main.dir/link.txt --verbose=$(VERBOSE)

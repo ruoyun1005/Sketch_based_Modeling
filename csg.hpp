@@ -29,12 +29,12 @@ vector<Plane> silhouettePlanes (
     const vector<Point>& contour,
     ViewPlane view
 );
-
+bool isInside(const vec3& p, const Plane& pl);
 //用平面裁多面體
 Polyhedron clipByPlane(const Polyhedron& P, const Plane& pl);
 
-//把原本 buildCylinder 回傳的 vertices 轉成 Polyhedron
-Polyhedron makePolyFromTriangles(
-    const vector<vec3>& triVerts);
+
 
 Polyhedron makeBoundingCube(float R);
+
+Polyhedron makePolyFromSolid(const Solid& s);

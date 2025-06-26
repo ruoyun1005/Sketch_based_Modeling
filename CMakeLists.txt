@@ -26,6 +26,7 @@ add_executable(main ${SRCS})
 
 # include 路徑
 target_include_directories(main PRIVATE
+    #${CMAKE_SOURCE_DIR}/external/imgui    # ImGui headers
     ${GLEW_INCLUDE_DIRS}
     ${GLFW_INCLUDE_DIRS}
     ${GLM_INCLUDE_DIRS}
@@ -34,8 +35,8 @@ target_include_directories(main PRIVATE
 
 # link libraries
 target_link_libraries(main PRIVATE
+    #imgui
     GLEW::GLEW
     glfw
-    glm::glm
     ${OPENGL_LIBRARIES}
 )

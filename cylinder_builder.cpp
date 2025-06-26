@@ -1,6 +1,5 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/epsilon.hpp>
-#include <iostream>
 #include "cylinder_builder.hpp"
 #include "csg.hpp"
 
@@ -36,9 +35,9 @@ Solid buildCylinderXY(const vector<Point>&contour, float height){
         S.faces.push_back({idx+3,idx+4, idx+5});
     }
     //柱體底面
-    vec3 center_bottom(0.0f, 0.0f, 0.0f);
+    vec3 center_bottom(0.0f, 0.0f,  -height);
     for(const auto& p : contour){
-        center_bottom += vec3(p.x, p.y, 0.0f);
+        center_bottom += vec3(p.x, p.y, -height);
     }
     center_bottom /= static_cast<float>(contour.size());
 
@@ -54,7 +53,7 @@ Solid buildCylinderXY(const vector<Point>&contour, float height){
         S.faces.push_back({idx+0, idx+1, idx+2});
     }
     // 柱體頂面
-    vec3 center_top(0.0f, 0.0f, 0.0f);
+    vec3 center_top(0.0f, 0.0f, height);
     for(const auto& p : contour){
         center_top += vec3(p.x, p.y, height);
     }
@@ -75,11 +74,9 @@ Solid buildCylinderXY(const vector<Point>&contour, float height){
     auto side = silhouettePlanes(contour, ViewPlane:: XY);
     S.planes.insert(S.planes.end(), side.begin(), side.end());
     // 底面 z=0, 內側往上：  0·x+0·y+(−1)·z + h = 0
-    //S.planes.push_back({{0,0,-1}, height});
+    S.planes.push_back({{0,0,-1}, height});
     // 頂面 z=H, 內側往下： 0·x+0·y+1·z + (−h) = 0
-    //S.planes.push_back({{0,0, 1}, -height});
-    // 在 buildCylinderXY 後添加
-    
+    S.planes.push_back({{0,0, 1}, -height});
     return S;
 }
 
@@ -113,7 +110,7 @@ Solid buildCylinderXZ(const vector<Point>&contour, float height){
         
     }
     //柱體底面
-    vec3 center_bottom(0.0f, 0.0f, 0.0f);
+    vec3 center_bottom(0.0f,-height, 0.0f);
     for(const auto& p : contour){
         center_bottom += vec3(p.x, -height, p.y);
     }
@@ -132,9 +129,9 @@ Solid buildCylinderXZ(const vector<Point>&contour, float height){
 
     }
     // 柱體頂面
-    vec3 center_top(0.0f, 0.0f, 0.0f);
+    vec3 center_top(0.0f,height, 0.0f);
     for(const auto& p : contour){
-        center_top += vec3(p.x, p.y, height);
+        center_top += vec3(p.x, height, p.y);
     }
     center_top /= static_cast<float>(contour.size());
 
@@ -145,19 +142,19 @@ Solid buildCylinderXZ(const vector<Point>&contour, float height){
 
         int idx = (int)S.verts.size();
         S.verts.push_back(center_top);
-        S.verts.push_back(p1);
         S.verts.push_back(p2);
+        S.verts.push_back(p1);
         S.faces.push_back({idx+0, idx+1, idx+2});
     }
     // 產生半平面
     auto side = silhouettePlanes(contour, ViewPlane:: XZ);
     S.planes.insert(S.planes.end(), side.begin(), side.end());
     // 底面 z=0, 內側往上：  0·x+0·y+(−1)·z + h = 0
-    //S.planes.push_back({{0,0,-1}, height});
+    S.planes.push_back({{0,0,-1}, height});
     // 頂面 z=H, 內側往下： 0·x+0·y+1·z + (−h) = 0
-    //S.planes.push_back({{0,0, 1}, -height});
+    S.planes.push_back({{0,0, 1}, -height});
+    
     return S;
-   
 }
 
 // 生成柱體(yz平面延伸)
@@ -190,7 +187,7 @@ Solid buildCylinderYZ(const vector<Point>&contour, float height){
         
     }
     //柱體底面
-    vec3 center_bottom(0.0f, 0.0f, 0.0f);
+    vec3 center_bottom(-height, 0.0f, 0.0f);
     for(const auto& p : contour){
         center_bottom += vec3( -height, p.x, p.y);
     }
@@ -209,7 +206,7 @@ Solid buildCylinderYZ(const vector<Point>&contour, float height){
         
     }
     // 柱體頂面
-    vec3 center_top(0.0f, 0.0f, 0.0f);
+    vec3 center_top(height, 0.0f, 0.0f);
     for(const auto& p : contour){
         center_top += vec3(height, p.x, p.y);
     }
@@ -230,9 +227,9 @@ Solid buildCylinderYZ(const vector<Point>&contour, float height){
     auto side = silhouettePlanes(contour, ViewPlane:: YZ);
     S.planes.insert(S.planes.end(), side.begin(), side.end());
     // 底面 z=0, 內側往上：  0·x+0·y+(−1)·z + h = 0
-    //S.planes.push_back({{0,0,-1}, height});
+    S.planes.push_back({{0,0,-1}, height});
     // 頂面 z=H, 內側往下： 0·x+0·y+1·z + (−h) = 0
-    //S.planes.push_back({{0,0, 1}, -height});
+    S.planes.push_back({{0,0, 1}, -height});
     
     return S;
 }

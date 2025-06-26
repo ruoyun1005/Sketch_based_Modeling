@@ -9,6 +9,11 @@
 #include "cylinder_builder.hpp"
 #include "csg.hpp" 
 
+// 定義 Point 的 != 運算子
+inline bool operator!=(const Point& a, const Point& b) {
+    return a.x != b.x || a.y != b.y;
+}
+
 // #include "imgui.h"
 // #include "imgui_impl_glfw.h"
 // #include "imgui_impl_opengl3.h"
@@ -48,6 +53,8 @@ float theta = 0.0f;
 float phi = 0.0f;
 mat4x4 transformMat = mat4x4(1);
 
+GLsizei vertsXY = 0, vertsXZ = 0, vertsYZ = 0;
+
 float radius = 1.0f;
 vec3 cameraPos(3.0f, 3.0f, radius);
 vec3 cameraUp(0.0f, 0.0f, 1.0f);
@@ -55,6 +62,15 @@ vec3 cameraUp(0.0f, 0.0f, 1.0f);
 bool shouldFill = false;
 
 CSG_op currentOP = CSG_op::INTERSECT; // 預設布林運算為交集
+
+void dump_plane(const vector<Plane>& pls, const string& name){
+    cout << name << " ( " << pls.size() <<" planes):\n";
+    for(size_t i = 0; i< pls.size(); i++){
+        const auto& pl = pls[i];
+        cout << "  [" << i << "] n=(" << pl.n.x << ", " << pl.n.y <<"," << pl.n.z << "), d=" << pl.d << "\n";
+
+    }
+}
 
 // --------------------------------------------------
 // 滑鼠按下記錄點
@@ -122,7 +138,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
     }
 }
 void extractToAllverts(const Polyhedron &P) {
-    allvertices.clear();
+    
     for (auto &f : P.faces) {
         allvertices.push_back(P.verts[f[0]]);
         allvertices.push_back(P.verts[f[1]]);
@@ -130,63 +146,97 @@ void extractToAllverts(const Polyhedron &P) {
     }
 }
 
-void init() {
-    // 1. 從全域的 linePoints_* 取出三個視圖的輪廓點
+void init(){
+
     vector<Point> contour_xy = linePoints_top;
     vector<Point> contour_xz = linePoints_left;
     vector<Point> contour_yz = linePoints_front;
 
-    // 2. 生成三個柱體對象
+    auto dump_contour = [&](const vector<Point>& ctr, const char* name){
+    cout << name << " (" << ctr.size() << " points):\n";
+    for (size_t i = 0; i < ctr.size(); ++i)
+        cout << "  ["<<i<<"] ("<<ctr[i].x<<", "<<ctr[i].y<<")\n";
+    };
+    auto dump_verts = [&](const vector<vec3>& ctr, const char* name){
+        cout << name << " (" << ctr.size() << " points):\n";
+        for (size_t i = 0; i < ctr.size(); ++i)
+            cout << "  ["<<i<<"] ("<<ctr[i].x<<", "<<ctr[i].y<<", "<<ctr[i].z<<")\n";
+    };
+    
+    auto planesXY = silhouettePlanes(contour_xy, ViewPlane::XY);
+    auto planesXZ = silhouettePlanes(contour_xz, ViewPlane::XZ);
+    auto planesYZ = silhouettePlanes(contour_yz, ViewPlane::YZ);
+    dump_contour(contour_xy, "contour_xy");
+    dump_plane(planesXY, "planesXY");
+    dump_contour(contour_xz, "contour_xz");
+    dump_plane(planesXZ, "planesXZ");
+    dump_contour(contour_yz, "contour_yz");
+    dump_plane(planesYZ, "planesYZ");
+    
+    
     Solid cylXY = buildCylinderXY(contour_xy, 1.0f);
     Solid cylXZ = buildCylinderXZ(contour_xz, 1.0f);
     Solid cylYZ = buildCylinderYZ(contour_yz, 1.0f);
 
-    // 3. 清空所有頂點容器
-    allvertices.clear();
-
-    // 4. 定義一個 lambda，將柱體的三角面展開並加入 allvertices
-    auto appendSolid = [&](const Solid& s) {
-        for (const auto& tri : s.faces) {
-            allvertices.push_back(s.verts[tri[0]]);
-            allvertices.push_back(s.verts[tri[1]]);
-            allvertices.push_back(s.verts[tri[2]]);
-        }
-    };
-
-    // 5. 將三個柱體的頂點依序加入 allvertices
-    appendSolid(cylXY);
-    appendSolid(cylXZ);
-    appendSolid(cylYZ);
-
-    // 6. 生成 VAO 與 VBO（只需呼叫一次即可）
-    static bool inited = false;
-    if (!inited) {
-        glGenVertexArrays(1, &vao);
-        glGenBuffers(1, &vbo);
-        inited = true;
+    
+    Polyhedron P = makePolyFromSolid(cylXY);          
+    
+    // P = P ∩ halfspaces_XZ
+    // auto planesXZ = silhouettePlanes(contour_xz, ViewPlane::XZ); 
+    for (auto &pl : planesXZ) {
+        P = clipByPlane(P, pl);
     }
+    cout<<"裁剪 XZ 後: verts="<<P.verts.size()
+         <<", faces="<<P.faces.size()<<"\n";
+    // //P = (P ∩ halfspaces_XZ) ∩ halfspaces_YZ
+    // //auto planesYZ = silhouettePlanes(contour_yz, ViewPlane::YZ);
+    for (auto &pl : planesYZ) {
+        P = clipByPlane(P, pl);
+    }
+    cout<<"裁剪 YZ 後: verts="<<P.verts.size()
+         <<", faces="<<P.faces.size()<<"\n";
 
-    // 7. 綁定 VAO 與 VBO，開始設定頂點緩衝
-    glBindVertexArray(vao);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    
+    //dump_verts(P.verts, "verts");
+    
+    Polyhedron P1 = makePolyFromSolid(cylXZ);   
+    for (auto &pl : planesXZ) {
+        P1 = clipByPlane(P1, pl);
+    }
+    for (auto &pl : planesYZ) {
+        P1 = clipByPlane(P1, pl);
+    }
+    
+    Polyhedron P2 = makePolyFromSolid(cylYZ);  
+    for (auto &pl : planesXZ) {
+        P2 = clipByPlane(P2, pl);
+    } 
+    for (auto &pl : planesXY) {
+        P2 = clipByPlane(P2, pl);
+    }
+    allvertices.clear();
+    if (!P.verts.empty()) {
+        extractToAllverts(P);
+    }
+    if (!P1.verts.empty()) {
+        extractToAllverts(P1);
+    }
+    if (!P2.verts.empty()) {
+        extractToAllverts(P2);
+    } 
 
-    // 8. 把 allvertices 資料上傳到 GPU
-    glBufferData(GL_ARRAY_BUFFER,
-                 allvertices.size() * sizeof(vec3),
-                 allvertices.data(),
-                 GL_STATIC_DRAW);
+    
+    glGenVertexArrays(1, &vao); //建立 VAO 的 ID 編號
+    glGenBuffers(1, &vbo);  // 存放頂點的實體gpu記憶體區塊
 
-    // 9. 啟用並設定頂點屬性（位置屬性位於 location = 0）
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0,
-                          3,
-                          GL_FLOAT,
-                          GL_FALSE,
-                          sizeof(vec3),
-                          reinterpret_cast<void*>(0));
+    glBindVertexArray(vao); // 關於頂點的設定都存進這個 VAO
+    glBindBuffer(GL_ARRAY_BUFFER, vbo); // 告訴 opengl接下來要對哪個 buffer 操作 類型是「頂點資料」
+    glBufferData(GL_ARRAY_BUFFER, allvertices.size() * sizeof(vec3), allvertices.data(), GL_STATIC_DRAW);// 把資料丟進vbo
+    
+    glEnableVertexAttribArray(0); // 啟用頂點屬性
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vec3), (void*)0); 
 
-    // 10. 解除 VAO 綁定
-    glBindVertexArray(0);
+    glBindVertexArray(0); // 取消綁定 VAO
 }
 
 void initGL() {
@@ -274,9 +324,24 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 void render(){
     if (allvertices.empty()) return;
     glBindVertexArray(vao);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     // allVertices 裡頭已經是三角形清單了，一次 draw 出來
     glDrawArrays(GL_TRIANGLES, 0, (GLsizei)allvertices.size());
+    
+    //  // 先畫 XY
+    // glDepthRange(0.0, 0.33);
+    //  glColor3f(0, 0, 1);
+    //  glDrawArrays(GL_TRIANGLES, 0, vertsXY);
+    // // 再畫 XZ
+    // glDepthRange(0.33, 0.66);
+    // glColor3f(0, 1, 0);
+    // glDrawArrays(GL_TRIANGLES, vertsXY, vertsXZ);
+    //  // 最後畫 YZ
+    //  glDepthRange(0.66, 1.0);
+    //  glColor3f(1, 0, 0);
+    //  glDrawArrays(GL_TRIANGLES, vertsXY + vertsXZ, vertsYZ);
+    //  glDepthRange(0.0, 1.0);
+
     glBindVertexArray(0);
     glBindVertexArray(0);
 

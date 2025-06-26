@@ -1,45 +1,45 @@
 #include "csg.hpp"
 #include <glm/gtc/epsilon.hpp>
-#include <iostream>
-
+#include<iostream>
 using namespace std;
 using namespace glm;
 
 
 
 //生出half plane：把二維的輪廓線
-vector<Plane> silhouettePlanes(const vector<Point>& contour, ViewPlane view) {
+vector<Plane> silhouettePlanes (const vector<Point>& contour,ViewPlane view){
     vector<Plane> planes;
+    planes.clear();
     int N = contour.size();
-    for (int i = 0; i < N; i++) {
-        auto a = contour[i];
-        auto b = contour[(i + 1) % N];
-        vec3 u, p0, n;
-        if (view == ViewPlane::XY) {
+    for (int i = 0; i < N-1; i++){
+        auto a = contour[i];// p_i
+        auto b = contour[(i+1) % N];// p_i+1
+        vec3 u, p0, n;//u 是線段（pi pi+1)的向量   n 是法向向量  p0 另為起始點 p1 in R3( p_i in R2 )
+        if (view == ViewPlane::XY){
             u = vec3(b.x - a.x, b.y - a.y, 0);
             p0 = vec3(a.x, a.y, 0);
-            n = vec3(u.y, -u.x, 0); // 反轉為順時針輪廓的外部法線
-        } else if (view == ViewPlane::XZ) {
+            n = vec3(-u.y, u.x, 0);
+        }
+        if(view == ViewPlane::XZ){
             u = vec3(b.x - a.x, 0, b.y - a.y);
             p0 = vec3(a.x, 0, a.y);
-            n = vec3(u.z, 0, -u.x);
-        } else if (view == ViewPlane::YZ) {
+            n = vec3(-u.z, 0, u.x);
+        }
+        if(view == ViewPlane::YZ){
             u = vec3(0, b.x - a.x, b.y - a.y);
             p0 = vec3(0, a.x, a.y);
-            n = vec3(0, u.z, -u.y);
+            n = vec3(0, - u.z, u.y);
         }
-        if (length(u) < 1e-6f) continue; // 跳過零向量
         n = normalize(n);
-        float d = -dot(n, p0);
-        planes.push_back({n, d});
-        std::cout << "[debug] Plane n=(" << n.x << "," << n.y << "," << n.z << ") d=" << d << "\n";
+        float d = - dot(n, p0);
+        planes.push_back({n,d});
     }
     return planes;
 }
 
 //測試在平面的哪一側 ( let n.p d >=0 為內側 )
 bool isInside(const vec3& p, const Plane& pl){
-    return dot(pl.n, p) + pl.d >= -1e-6f;
+    return dot(pl.n, p) + pl.d >=0.0f;
 }
 
 // 求線段 p1→p2 與平面的交點( 這裡的 p1 p2 是從原本建構柱體的那些三角形片面來的，跟上面的pi pi+i不一樣 )
@@ -47,87 +47,119 @@ vec3 intersectPlane(const vec3& p1, const vec3& p2, const Plane& pl){
     float v1 = dot(pl.n, p1) + pl.d;
     float v2 = dot (pl.n, p2) + pl.d;
     float t = v1 / (v1 - v2);
-    if (abs(v1 - v2) < 1e-6f) return p1;
+
     return p1 + t * (p2 - p1);
+}
+static vector<vec3> stitchEdgesIntoLoop(vector<pair<vec3,vec3>>& cutSegs) {
+    vector<vec3> loop;
+    if (cutSegs.empty()) {
+        cout << "cutSegs is empty" << std::endl;
+        return loop;
+    }
+
+    const float eps = 1e-6f;
+    // epsilon 比對
+    auto same = [&](const vec3 &a, const vec3 &b){
+        return glm::all(glm::epsilonEqual(a, b, eps));
+    };
+
+    // 先取第一條邊，當作起點→下一個點
+    vec3 start = cutSegs[0].first;
+    vec3 curr  = cutSegs[0].second;
+    loop.push_back(start);
+    loop.push_back(curr);
+
+    // 把這條邊從列表中移除
+    cutSegs.erase(cutSegs.begin());
+
+    // 不斷找下一條以 curr 為端點的邊
+    while (!cutSegs.empty() && !same(curr, start)) {
+        bool advanced = false;
+        for (auto it = cutSegs.begin(); it != cutSegs.end(); ++it) {
+            if (same(it->first, curr)) {
+                curr = it->second;
+                loop.push_back(curr);
+                cutSegs.erase(it);
+                advanced = true;
+                break;
+            }
+            else if (same(it->second, curr)) {
+                curr = it->first;
+                loop.push_back(curr);
+                cutSegs.erase(it);
+                advanced = true;
+                break;
+            }
+        }
+        if (!advanced) {
+            // 如果找不到相連的邊，就跳出（理論上不應該發生）
+            break;
+        }
+    }
+
+    return loop;
 }
 
 //以一個平面去裁切一個多面體
-Polyhedron clipByPlane(const Polyhedron& P, const Plane& pl) {
+Polyhedron clipByPlane(const Polyhedron& P, const Plane& pl){
     Polyhedron out;
-    out.verts = P.verts;
+    vector<pair<vec3,vec3>> cutSegs;
 
-    vector<bool> inside(P.verts.size());
-    for (size_t i = 0; i < P.verts.size(); ++i) {
-        inside[i] = isInside(P.verts[i], pl);
-    }
+    for(auto& face : P.faces){
+        vector<vec3> poly = { P.verts[face[0]], P.verts[face[1]], P.verts[face[2]] };// 取出原三角形的 3 個點
 
-    for (const auto& face : P.faces) {
-        vector<int> newFace;
-        for (size_t i = 0; i < 3; ++i) {
-            int idxA = face[i];
-            int idxB = face[(i + 1) % 3];
-            bool inA = inside[idxA], inB = inside[idxB];
-
-            if (inA) newFace.push_back(idxA);
-            if (inA != inB) {
-                vec3 intersect = intersectPlane(P.verts[idxA], P.verts[idxB], pl);
-                if (isnan(intersect.x) || isnan(intersect.y) || isnan(intersect.z)) continue;
-                out.verts.push_back(intersect);
-                newFace.push_back(out.verts.size() - 1);
+        vector<vec3> input = poly;
+        vector<vec3> output;
+        int N = (int)input.size();
+        for (int i = 0; i < N; i++) {
+        vec3 a = input[i];
+        vec3 b = input[(i+1)%N];
+        bool inA = isInside(a,pl);
+        bool inB = isInside(b,pl);
+        if (inA != inB) {
+            vec3 I = intersectPlane(a,b,pl);
+            vec3 J = I;
+            if (inA && !inB)     output.push_back(I);
+            else if (!inA && inB){
+                output.push_back(I);
+                output.push_back(b);
             }
+            cutSegs.emplace_back(I,J);
         }
-
-        if (newFace.size() >= 3) {
-            // 對多邊形進行三角化
-            for (size_t i = 1; i + 1 < newFace.size(); ++i) {
-                out.faces.push_back({newFace[0], newFace[i], newFace[i + 1]});
-            }
+        else if (inA && inB) {
+            output.push_back(b);
         }
     }
 
-    if (out.faces.empty()) {
-        std::cout << "[debug] No valid faces after clip\n";
-        return out;
-    }
+        //如果裁剪後頂點數 < 3，就忽略
+        if(output.size() < 3) continue;
 
-    // 優化頂點
-    vector<vec3> usedVerts;
-    vector<int> vertMap(out.verts.size(), -1);
-    for (const auto& face : out.faces) {
-        for (int idx : face) {
-            if (vertMap[idx] == -1) {
-                vertMap[idx] = usedVerts.size();
-                usedVerts.push_back(out.verts[idx]);
-            }
+        //三角化
+        for(size_t i = 1; i+1 < output.size(); i++){
+            int base = (int)out.verts.size();
+
+            out.verts.push_back( output[0] );
+            out.verts.push_back( output[i] );
+            out.verts.push_back( output[i+1] );
+            out.faces.push_back({ base+0, base+1, base+2 });
         }
     }
-    out.verts = usedVerts;
-    for (auto& face : out.faces) {
-        for (int& idx : face) {
-            idx = vertMap[idx];
+    auto loop = stitchEdgesIntoLoop(cutSegs);
+    if(loop.size()>=3){
+        // 計算質心
+        glm::vec3 center(0.0f);
+        for(auto &p: loop) center += p;
+        center /= (float)loop.size();
+        // 扇形三角化
+        for(size_t i=1;i+1<loop.size();++i){
+            int b = (int)out.verts.size();
+            out.verts.push_back(center);
+            out.verts.push_back(loop[i]);
+            out.verts.push_back(loop[i+1]);
+            out.faces.push_back({b,b+1,b+2});
         }
     }
-
-    std::cout << "[debug] Clip result: " << out.verts.size() << " verts, " << out.faces.size() << " faces\n";
     return out;
-}
-
-Polyhedron makePolyFromTriangles(const std::vector<glm::vec3>& triVerts) {
-    Polyhedron P;
-    int triCount = triVerts.size() / 3;
-    if (triVerts.size() % 3 != 0) {
-        std::cout << "[debug] Invalid triVerts size: " << triVerts.size() << "\n";
-        return P;
-    }
-    for(int i = 0; i < triCount; ++i) {
-        int b = i * 3;
-        // 三角形 (b, b+1, b+2)
-        P.verts.push_back(triVerts[b + 0]);
-        P.verts.push_back(triVerts[b + 1]);
-        P.verts.push_back(triVerts[b + 2]);
-        P.faces.push_back({ b + 0, b + 1, b + 2 });
-    }
-    return P;
 }
 
 Polyhedron makeBoundingCube(float R) {
@@ -151,3 +183,46 @@ Polyhedron makeBoundingCube(float R) {
     }
     return P;
 }
+Polyhedron makePolyFromTriangles(const vector<vec3>& triVerts) {
+    Polyhedron P;
+
+    // 輸入長度必須是 3 的倍數
+    if (triVerts.size() % 3 != 0) {
+        cerr << "[makePolyFromTriangles] triVerts.size() = "
+             << triVerts.size()
+             << " 不是 3 的倍數！\n";
+        return P;
+    }
+
+    size_t triCount = triVerts.size() / 3;
+    P.verts.reserve(triVerts.size());
+    P.faces.reserve(triCount);
+
+    for (size_t i = 0; i < triCount; ++i) {
+        // push 三個頂點
+        int base = static_cast<int>(P.verts.size());
+        P.verts.push_back(triVerts[3*i + 0]);
+        P.verts.push_back(triVerts[3*i + 1]);
+        P.verts.push_back(triVerts[3*i + 2]);
+        // 對應一個面
+        P.faces.push_back({ base, base+1, base+2 });
+    }
+
+    return P;
+}
+// helpers.hpp
+Polyhedron makePolyFromSolid(const Solid& s) {
+    Polyhedron P;
+    P.verts.reserve(s.verts.size());
+    P.faces.reserve(s.faces.size());
+    // 1) 复制顶点
+    for (auto& v : s.verts) {
+        P.verts.push_back(v);
+    }
+    // 2) 复制面
+    for (auto& f : s.faces) {
+        P.faces.push_back(f);
+    }
+    return P;
+}
+
